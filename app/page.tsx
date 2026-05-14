@@ -117,14 +117,14 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <div className="bg-blue-100 rounded-2xl p-5">
-            <p className="text-blue-700 text-sm">Planned Weekly Hours</p>
+            <p className="text-blue-700 text-sm font-bold">Planned Weekly Hours</p>
             <h2 className="text-3xl font-bold text-blue-900 mt-1">
               {totalPlannedHours} hrs
             </h2>
           </div>
 
           <div className="bg-blue-600 rounded-2xl p-5">
-            <p className="text-blue-100 text-sm">Actual Weekly Hours</p>
+            <p className="text-blue-100 text-sm font-bold">Actual Weekly Hours</p>
             <h2 className="text-3xl font-bold text-white mt-1">
               {totalActualHours} hrs
             </h2>
@@ -143,7 +143,7 @@ export default function Home() {
           <tbody>
             {shifts.map((shift, index) => (
               <tr key={shift.day} className="border-b border-blue-50">
-                <td className="py-4 font-medium text-blue-900">
+                <td className="py-4 font-bold text-blue-900 text-xl">
                   <div>{weekDates[index].label}</div>
                   <div className="text-sm text-blue-500 font-normal">
                     {weekDates[index].shortDate}
@@ -158,7 +158,7 @@ export default function Home() {
                     onChange={(e) =>
                       updateShift(index, "planned", e.target.value)
                     }
-                    className="border border-blue-200 rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border border-blue-200 rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-900 font-medium"
                   />
                 </td>
 
@@ -170,13 +170,20 @@ export default function Home() {
                     onChange={(e) =>
                       updateShift(index, "actual", e.target.value)
                     }
-                    className="border border-blue-200 rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border border-blue-200 rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-900 font-medium"
                   />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div className="flex justify-end mt-12">
+          <img
+            src="/nerveli-logo.png"
+            alt="Nerveli Logo"
+            className="h-10 opacity-80"
+          />
+        </div>
       </div>
     </main>
   );
