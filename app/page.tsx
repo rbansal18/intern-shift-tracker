@@ -31,23 +31,43 @@ export default function Home() {
 
   const weekDates = getWeekDates(weekOffset);
 
-  const [shifts, setShifts] = useState(
-    weekDates.map((day) => ({
-      day: day.label,
-      planned: "",
-      actual: "",
-    }))
-  );
+  const createEmptyWeek = () =>
+  weekDates.map((day) => ({
+    day: day.label,
+    planned: "",
+    actual: "",
+  }));
+
+const [weeklyShifts, setWeeklyShifts] = useState<{
+  [key: number]: {
+    day: string;
+    planned: string;
+    actual: string;
+  }[];
+}>({
+  0: createEmptyWeek(),
+});
+
+const shifts = weeklyShifts[weekOffset] || createEmptyWeek();
 
   const updateShift = (
-    index: number,
-    field: "planned" | "actual",
-    value: string
-  ) => {
-    const updated = [...shifts];
-    updated[index][field] = value;
-    setShifts(updated);
-  };
+  index: number,
+  field: "planned" | "actual",
+  value: string
+) => {
+  setWeeklyShifts((prev) => {
+    const currentWeek = prev[weekOffset]
+      ? [...prev[weekOffset]]
+      : createEmptyWeek();
+
+    currentWeek[index][field] = value;
+
+    return {
+      ...prev,
+      [weekOffset]: currentWeek,
+    };
+  });
+};
 
   const calculateHours = (timeRange: string) => {
     const regex = /(\d+)(?::(\d+))?\s*(AM|PM)/gi;
