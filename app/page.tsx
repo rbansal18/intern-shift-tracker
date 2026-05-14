@@ -1,6 +1,6 @@
 "use client";
-
-import React, { useState, useMemo } from "react";
+import { supabase } from "../lib/supabase";
+import React, { useEffect, useMemo, useState } from "react";
 
 export default function Home() {
   const [weekOffset, setWeekOffset] = useState(0);
@@ -50,24 +50,62 @@ const [weeklyShifts, setWeeklyShifts] = useState<{
 
 const shifts = weeklyShifts[weekOffset] || createEmptyWeek();
 
-  const updateShift = (
+useEffect(() => {
+  const fetchShifts = async () => {
+    const { data, error } = await supabase
+      .from("shifts")
+      .select("*")
+      .eq("week", weekOffset.toString());
+
+    if (data && data.length > 0) {
+      const formatted = createEmptyWeek().map((day) => {
+        const saved = data.find((d) => d.day === day.day);
+
+        return {
+          ...day,
+          planned: saved?.planned || "",
+          actual: saved?.actual || "",
+        };
+      });
+
+      setWeeklyShifts((prev) => ({
+        ...prev,
+        [weekOffset]: formatted,
+      }));
+    }
+  };
+
+  fetchShifts();
+}, [weekOffset]);
+
+  const updateShift = async (
   index: number,
   field: "planned" | "actual",
   value: string
 ) => {
-  setWeeklyShifts((prev) => {
-    const currentWeek = prev[weekOffset]
-      ? [...prev[weekOffset]]
-      : createEmptyWeek();
+  const updated = [...shifts];
 
-    currentWeek[index][field] = value;
+  updated[index][field] = value;
 
-    return {
-      ...prev,
-      [weekOffset]: currentWeek,
-    };
+  setWeeklyShifts((prev) => ({
+    ...prev,
+    [weekOffset]: updated,
+  }));
+
+  const shift = updated[index];
+
+  const { data, error } = await supabase
+  .from("shifts")
+  .upsert({
+    id: `${weekOffset}-${shift.day}`,
+    week: weekOffset.toString(),
+    day: shift.day,
+    planned: shift.planned,
+    actual: shift.actual,
   });
+
 };
+
 
   const calculateHours = (timeRange: string) => {
     const regex = /(\d+)(?::(\d+))?\s*(AM|PM)/gi;
